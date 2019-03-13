@@ -1,6 +1,18 @@
 # -*- coding: utf-8 -*-
 """
 Module containing some Quality of life functions and classes.
+
+Classes
+----------
+    TimeTaken
+        Simple class for measuring the time taken for a program to run and outputting it in a readable way.
+    Logger
+        Class that will allow the user to log to a file while also printing to console
+        
+Functions
+----------
+    newDir
+        Checks if all directories in a path exist and if not makes the missing ones.
 """
 ##### IMPORTS #####
 import os
@@ -9,7 +21,7 @@ import time
 ##### CLASSES #####
 class TimeTaken:
     """
-    Simple class for measuring the time taken for a program to run and outputting it in a readable way.
+        Simple class for measuring the time taken for a program to run and outputting it in a readable way.
     """
     def __init__(self):
         """Sets start to currect time when class is instanciated."""
@@ -38,6 +50,92 @@ class TimeTaken:
         """Resets the start time, returns new start time."""
         self.start = time.clock()
         return self.start
+
+class Logger:
+    """
+        Class that will allow the user to log to a file while also printing to console, 
+        inspired by the logging module albeit much simpler.
+        
+        Parameters
+        ----------
+        logFile: string
+            Path to the log file.
+        append: boolean, optional
+            Whether or not to append to the logFile (True), if it already exists, or overwrite it (False).
+            Default False.
+        level: string, optional
+            The level of message which to output to console, can be one of 4 values ('DEBUG', 'INFO', 'ERROR', 'FATAL').
+            Default 'INFO'.
+    """
+    # Class variables
+    lvlVals = {'DEBUG':0, 'INFO':1, 'ERROR':2, 'FATAL':3}
+    
+    def __init__(self, logFile, append=False, level='INFO'):
+        """Initialises the class and sets the console output level and the path to the log file."""
+        self.logFile = logFile
+        self.setLevel(level)
+        # Select mode
+        if not append:
+            mode = 'wt'
+        else:
+            mode = 'at'
+        # Create log file (if it doesn't exist already)
+        with open(logFile, mode):
+            pass
+        
+        return
+        
+    def setLevel(self, level):
+        """
+            Set the console output level to a new value.
+            
+            Parameters
+            ----------
+                level: string, optional
+                    The level of message which to output to console, can be one of 4 values ('DEBUG', 'INFO', 'ERROR', 'FATAL').
+                    Default 'INFO'.
+        """
+        # Check level is an acceptable value
+        if level.upper() not in Logger.lvlVals.keys():
+            raise ValueError('level not acceptable value, given {} should be {}'.format(level, Logger.lvlVals.keys()))
+        self.consoleLvl = level.upper()
+        return
+    
+    def getLevel(self):
+        """Returns the current console output level."""
+        return self.consoleLvl
+    
+    def getTime(self):
+        """Returns the current time and date as a string"""
+        t = time.localtime()
+        return '{:0>2}/{:0>2}/{:0>2} {:0>2}:{:0>2}:{:0>2}'.format(t[2], t[1], str(t[0])[2:4], t[3], t[4], t[5])
+    
+    def printOut(self, *args, level='INFO'):
+        """
+            Prints out a message to the console, if level is above console output level, and to the log file.
+           
+            Parameters
+            ----------
+                *args: string or multiple strings
+                    String to be printed and written to log file.
+                level: string, optional
+                    The level of importance of the message. Default 'INFO'.
+        """
+        level = level.upper()
+        # Print if level is greater than console level
+        try:
+            if self.lvlVals[level] >= self.lvlVals[self.consoleLvl]:
+                print(*args)
+        except KeyError:
+            raise ValueError('level not acceptable value, given {} should be {}'.format(level, Logger.lvlVals.keys()))
+        # Get arguments as string
+        output = '[{:17}][{:6}] '.format(self.getTime(), level)
+        for i in args:
+            output += str(i)
+        # Write to log file
+        with open(self.logFile, 'at') as f:
+            f.write(output + '\n')
+        return
 
 ##### FUNCTIONS #####
 def newDir(dirPath):
@@ -80,5 +178,6 @@ def newDir(dirPath):
 ##### TEST CODE #####
 if __name__ == '__main__':
     timer = TimeTaken()
-    print('Testing')
-    print('Time taken', timer.getTimeTaken())
+    log = Logger('test.log', append=False)
+    log.printOut('Testing', level='debug')
+    log.printOut('Time taken', timer.getTimeTaken())
