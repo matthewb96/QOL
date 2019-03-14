@@ -138,7 +138,7 @@ class Logger:
         else:
             output = ''
         for i in args:
-            output += str(i)
+            output += str(i) + ' '
         # Write to log file
         with open(self.logFile, 'at') as f:
             f.write(output + '\n')
