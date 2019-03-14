@@ -66,14 +66,18 @@ class Logger:
         level: string, optional
             The level of message which to output to console, can be one of 4 values ('DEBUG', 'INFO', 'ERROR', 'FATAL').
             Default 'INFO'.
+        tags: boolean, optional
+            Whether to include [time][level] on each line of the log file.
+            Default True.
     """
     # Class variables
     lvlVals = {'DEBUG':0, 'INFO':1, 'ERROR':2, 'FATAL':3}
     
-    def __init__(self, logFile, append=False, level='INFO'):
+    def __init__(self, logFile, append=False, level='INFO', tags=True):
         """Initialises the class and sets the console output level and the path to the log file."""
         self.logFile = logFile
         self.setLevel(level)
+        self.incTags = tags
         # Select mode
         if not append:
             mode = 'wt'
@@ -129,7 +133,10 @@ class Logger:
         except KeyError:
             raise ValueError('level not acceptable value, given {} should be {}'.format(level, Logger.lvlVals.keys()))
         # Get arguments as string
-        output = '[{:17}][{:6}] '.format(self.getTime(), level)
+        if self.incTags:
+            output = '[{:17}][{:6}] '.format(self.getTime(), level)
+        else:
+            output = ''
         for i in args:
             output += str(i)
         # Write to log file
@@ -178,6 +185,6 @@ def newDir(dirPath):
 ##### TEST CODE #####
 if __name__ == '__main__':
     timer = TimeTaken()
-    log = Logger('test.log', append=False)
+    log = Logger('test.log', append=True, tags=False)
     log.printOut('Testing', level='debug')
     log.printOut('Time taken', timer.getTimeTaken())
