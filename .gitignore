@@ -1,0 +1,2 @@
+# Ignore compiled python module folder
+__pycache__
