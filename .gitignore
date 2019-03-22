@@ -1,2 +1,5 @@
 # Ignore compiled python module folder
 __pycache__
+# Ignore log files
+*.log
+*.LOG

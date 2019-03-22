@@ -114,7 +114,7 @@ class Logger:
         t = time.localtime()
         return '{:0>2}/{:0>2}/{:0>2} {:0>2}:{:0>2}:{:0>2}'.format(t[2], t[1], str(t[0])[2:4], t[3], t[4], t[5])
     
-    def printOut(self, *args, level='INFO'):
+    def printOut(self, *args, level='INFO', newLine=False):
         """
             Prints out a message to the console, if level is above console output level, and to the log file.
            
@@ -124,24 +124,34 @@ class Logger:
                     String to be printed and written to log file.
                 level: string, optional
                     The level of importance of the message. Default 'INFO'.
+                newLine: boolean, optional
+                    Whether or not to put each argument on a new line. Default True.
         """
         level = level.upper()
         # Print if level is greater than console level
         try:
             if self.lvlVals[level] >= self.lvlVals[self.consoleLvl]:
-                print(*args)
+                if newLine:
+                    print(*args, sep='\n')
+                else:
+                    print(*args)
         except KeyError:
-            raise ValueError('level not acceptable value, given {} should be {}'.format(level, Logger.lvlVals.keys()))
-        # Get arguments as string
+            raise ValueError("level not acceptable value, given '{}' should be {}".format(level, list(Logger.lvlVals.keys())))
+        # Set tags
         if self.incTags:
-            output = '[{:17}][{:6}] '.format(self.getTime(), level)
+            tags = '[{:17}][{:6}] '.format(self.getTime(), level)
         else:
+            tags = ''
+        # Get arguments as a string
+        if newLine:
             output = ''
-        for i in args:
-            output += str(i) + ' '
+            for i in args:
+                output += tags + str(i) + '\n'
+        else:
+            output = tags + ' '.join((str(i) for i in args)) + '\n'
         # Write to log file
         with open(self.logFile, 'at') as f:
-            f.write(output + '\n')
+            f.write(output)
         return
 
 ##### FUNCTIONS #####
@@ -185,6 +195,8 @@ def newDir(dirPath):
 ##### TEST CODE #####
 if __name__ == '__main__':
     timer = TimeTaken()
-    log = Logger('test.log', append=True, tags=False)
+    log = Logger('test.log', append=True, tags=True)
     log.printOut('Testing', level='debug')
+    test = list(range(10))
+    log.printOut(*test, level='info', newLine=True)
     log.printOut('Time taken', timer.getTimeTaken())
