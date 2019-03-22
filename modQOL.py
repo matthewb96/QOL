@@ -100,9 +100,14 @@ class Logger:
                     Default 'INFO'.
         """
         # Check level is an acceptable value
-        if level.upper() not in Logger.lvlVals.keys():
-            raise ValueError('level not acceptable value, given {} should be {}'.format(level, Logger.lvlVals.keys()))
+        self.checkLevel(level)
         self.consoleLvl = level.upper()
+        return
+    
+    def checkLevel(self, level):
+        """Checks the level given is allowed, raises ValueError if it isn't."""
+        if level.upper() not in Logger.lvlVals.keys():
+            raise ValueError("level not acceptable value, given '{}' should be {}".format(level, list(Logger.lvlVals.keys())))
         return
     
     def getLevel(self):
@@ -127,16 +132,13 @@ class Logger:
                 newLine: boolean, optional
                     Whether or not to put each argument on a new line. Default True.
         """
-        level = level.upper()
+        self.checkLevel(level)
         # Print if level is greater than console level
-        try:
-            if self.lvlVals[level] >= self.lvlVals[self.consoleLvl]:
-                if newLine:
-                    print(*args, sep='\n')
-                else:
-                    print(*args)
-        except KeyError:
-            raise ValueError("level not acceptable value, given '{}' should be {}".format(level, list(Logger.lvlVals.keys())))
+        if self.lvlVals[level.upper()] >= self.lvlVals[self.consoleLvl]:
+            if newLine:
+                print(*args, sep='\n')
+            else:
+                print(*args)
         # Set tags
         if self.incTags:
             tags = '[{:17}][{:6}] '.format(self.getTime(), level)
