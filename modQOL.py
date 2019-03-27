@@ -130,7 +130,7 @@ class Logger:
                 level: string, optional
                     The level of importance of the message. Default 'INFO'.
                 newLine: boolean, optional
-                    Whether or not to put each argument on a new line. Default True.
+                    Whether or not to put each argument on a new line. Default False.
         """
         self.checkLevel(level)
         # Print if level is greater than console level
