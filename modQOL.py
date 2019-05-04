@@ -25,31 +25,73 @@ class TimeTaken:
     """
     def __init__(self):
         """Sets start to currect time when class is instanciated."""
-        self.start = time.clock()
+        self.start = time.time()
+        self.laps = [self.start]
         return
+    
+    def _readableTime(self, timeVal):
+        """ Returns a readable formatted string of the given time. """
+        # If the timeVal is not a number return ??
+        try:
+            timeVal = float(timeVal)
+        except (TypeError, ValueError) as e:
+            return '?? secs.'
+        
+        if timeVal >= 60:
+            timeValSecs = int(timeVal % 60)
+            timeValMins = int((timeVal - timeValSecs) / 60)
+            if timeValMins >= 60:
+                timeValMins = int(timeValMins % 60)
+                timeValHrs = int((timeVal - (timeValMins * 60) - timeValSecs) / 3600)
+                return "{} hrs, {} mins, {} secs.".format(timeValHrs, timeValMins, timeValSecs)
+            else:
+                return "{} mins, {} secs.".format(timeValMins, timeValSecs)
+        elif timeVal < 1:
+            return "< 1 sec."
+        else:
+            return "{:.0f} secs.".format(timeVal)
         
     def getTimeTaken(self):
         """Returns a readable formatted string of the time taken."""
         #Calc time taken
-        timeTaken = round(time.clock() - self.start)
-        if timeTaken >= 60:
-            timeTakenSecs = int(timeTaken % 60)
-            timeTakenMins = int((timeTaken - timeTakenSecs) / 60)
-            if timeTakenMins >= 60:
-                timeTakenMins = int(timeTakenMins % 60)
-                timeTakenHrs = int((timeTaken - (timeTakenMins * 60) - timeTakenSecs) / 3600)
-                return "{} hrs, {} mins, {} secs.".format(timeTakenHrs, timeTakenMins, timeTakenSecs)
-            else:
-                return "{} mins, {} secs.".format(timeTakenMins, timeTakenSecs)
-        elif timeTaken < 1:
-            return "< 1 sec."
-        else:
-            return "{} secs.".format(timeTaken)
+        timeTaken = round(time.time() - self.start)
+        return self._readableTime(timeTaken)
         
     def resetStart(self):
-        """Resets the start time, returns new start time."""
-        self.start = time.clock()
+        """Resets the start time and the laps list, returns new start time."""
+        self.start = time.time()
+        self.laps = [self.start]
         return self.start
+    
+    def newLap(self):
+        """ Adds current time to laps list, returns list. """
+        self.laps.append(time.time())
+        return self.laps
+    
+    def avgLapTime(self):
+        """ Calculates the average time taken each lap. """
+        # If there is only one value in laps then return None
+        if len(self.laps) <= 1:
+            return None
+        # Get the time taken for each lap
+        timeTaken = []
+        for i, val in enumerate(self.laps):
+            if i == 0:
+                continue
+            timeTaken.append(val - self.laps[i-1])
+        # Calculate average
+        return sum(timeTaken)/len(timeTaken)
+    
+    def remainingTime(self, remainingLaps):
+        """ Returns the remaining time in a readable format when given the number of laps left. """
+        avgLap = self.avgLapTime()
+        if avgLap == None:
+            return self._readableTime(None)
+        # Calculate time left in this lap
+        # get absolute value so if this lap is > avgLap it adds time on to time left
+        remainingLap = abs(avgLap - (time.time() - self.laps[-1]))
+        timeLeft = avgLap * remainingLaps + remainingLap
+        return self._readableTime(timeLeft)
 
 class Logger:
     """
