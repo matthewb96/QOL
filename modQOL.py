@@ -198,6 +198,29 @@ class Logger:
             f.write(output)
         return
 
+class ParameterFile: # WIP
+    """ Class that can read and write parameter text files, to be used for various variables within a script. """
+    class Parameter:
+        """ Class for storing a single parameter. """
+        def __init__(self, name, value, typeCheck, description=None):
+            self.type = type(value)
+            if self.type != typeCheck:
+                raise TypeError('Parameter is not correct type,' + 
+                                'Name: {}, type given: {}, type expected: {}'.format(name, self.type, typeCheck))
+            self.name = str(name)
+            self.value = value
+            self.description = str(description)
+            return
+        
+        def __str__(self):
+            outStr = 'Name: {}\nValue: {}\nType: {}\nDescription: {}'.format(
+                    self.name, self.value, self.type, self.description)
+            return outStr
+        
+    def __init__(self):
+        raise Exception('This class is WIP.')
+        return
+
 ##### FUNCTIONS #####
 def newDir(dirPath):
     """
