@@ -198,28 +198,79 @@ class Logger:
             f.write(output)
         return
 
-class ParameterFile: # WIP
+class ParameterFile:
     """ Class that can read and write parameter text files, to be used for various variables within a script. """
     class Parameter:
         """ Class for storing a single parameter. """
         def __init__(self, name, value, typeCheck, description=None):
-            self.type = type(value)
-            if self.type != typeCheck:
+            # Try to convert value to type
+            try:
+                if typeCheck in ('int', 'str', 'float'):
+                    # Convert string value to built in type
+                    self.value = eval(typeCheck + "('{}')".format(value))
+                else:
+                    # Convert string to non built in type
+                    module = __import__(typeCheck[0])
+                    func = getattr(module, typeCheck[1])
+                    self.value = func(value)
+            except (TypeError, ValueError) as e:
                 raise TypeError('Parameter is not correct type,' + 
-                                'Name: {}, type given: {}, type expected: {}'.format(name, self.type, typeCheck))
+                                'Name: {}, value given: {}, type expected: {}'.format(name, value, typeCheck))
+            self.type = typeCheck
+            # Set name and description
             self.name = str(name)
-            self.value = value
-            self.description = str(description)
+            if description == None:
+                self.description = ''
+            else:
+                self.description = str(description)
             return
         
         def __str__(self):
             outStr = 'Name: {}\nValue: {}\nType: {}\nDescription: {}'.format(
                     self.name, self.value, self.type, self.description)
             return outStr
+    
+    COMMENTS = ['#', '*']
         
     def __init__(self):
-        raise Exception('This class is WIP.')
+        self.parameters = []
         return
+    
+    def parameterDict(self):
+        """ Returns the parameters as a dictionary. """
+        paramDict = {}
+        for i in self.parameters:
+            paramDict[i.name] = i.value
+        return paramDict
+    
+    def readFile(self, filePath, paramTypes=None):
+        """ Reads the parameter text file and loads each parameter, checks parameters if paramTypes dictionary given. """
+        with open(filePath, 'rt') as f:
+            for line in f:
+                line = line.strip()
+                # Ignore any comment lines
+                if line.startswith(tuple(self.COMMENTS)) or line == '':
+                    continue
+                # Read parameter
+                name, value = line.split('=')
+                name = name.strip()
+                value = value.strip()
+                try:
+                    typeCheck = paramTypes[name]
+                except (KeyError, TypeError) as e:
+                    print(e)
+                    typeCheck = 'str'
+                self.parameters.append(self.Parameter(name, value, typeCheck))
+        return
+    
+    def writeFile(self, filePath):
+        with open(filePath, 'wt') as f:
+            for i in self.parameters:
+                if i.description != '':
+                    f.write('# {}\n'.format(i.description))
+                f.write('{} = {}\n'.format(i.name, i.value))
+        return
+    
 
 ##### FUNCTIONS #####
 def newDir(dirPath):
