@@ -243,6 +243,24 @@ class ParameterFile:
             paramDict[i.name] = i.value
         return paramDict
     
+    def getParamIndex(self, name):
+        """ Returns the index of the parameter with the given name, None if parameter doesn't exist. """
+        paramNames = [i.name for i in self.parameters]
+        try:
+            return paramNames.index(name)
+        except ValueError:
+            return None
+    
+    def addParameter(self, name, value, typeCheck, description=None, overwrite=True):
+        """ Adds parameter object to parameters list, overwrites any parameters with the same name. """
+        index = self.getParamIndex(name)
+        parameter = self.Parameter(name, value, typeCheck, description)
+        if index != None and overwrite:
+            self.parameters[index] = parameter
+        else:
+            self.parameters.append(parameter)
+        return parameter
+    
     def readFile(self, filePath, paramTypes=None):
         """ Reads the parameter text file and loads each parameter, checks parameters if paramTypes dictionary given. """
         with open(filePath, 'rt') as f:
@@ -260,7 +278,7 @@ class ParameterFile:
                 except (KeyError, TypeError) as e:
                     print(e)
                     typeCheck = 'str'
-                self.parameters.append(self.Parameter(name, value, typeCheck))
+                self.addParameter(name, value, typeCheck)
         return
     
     def writeFile(self, filePath):
