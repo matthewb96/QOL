@@ -291,7 +291,7 @@ class ParameterFile:
     
 
 ##### FUNCTIONS #####
-def newDir(dirPath):
+def newDir(dirPath, number=False):
     """
         Checks if all directories in a path exist and if not makes the missing ones.
         
@@ -300,15 +300,38 @@ def newDir(dirPath):
         ----------
         dirPath: string 
             Path to the directory to be created.
+        number: boolean
+            Whether or not to create a new directory, with a number, 
+            if dirPath already exists and is not empty.
         
         Returns
         ----------
-        None: none
-            None value.
+        info, path: tuple of 2 strings
+            Tuple containing a string explaining what newDir has done
+            and the path to the directory.
     """
     #List of directories to be created
     makeDirs = []
     checkDir = str(dirPath)
+    # Check if full path exists
+    if os.path.isdir(dirPath):
+        # Check if directory needs numbering
+        if number and os.listdir(dirPath) != 0:
+            if dirPath.endswith('/') or dirPath.endswith('\\'):
+                dirPath = dirPath[:-1] + '_{}' + dirPath[-1]
+            else:
+                dirPath = dirPath + '_{}'
+            count = 1
+            newDir = dirPath.format(count)
+            while os.path.exists(newDir):
+                count += 1
+                newDir = dirPath.format(count)
+            os.mkdir(newDir)
+            return ('New directory created with number {}'.format(count),
+                    newDir)
+        else:
+            return ('Directory already exists.', dirPath)
+        
     #Loop until found directory that exists
     while not os.path.exists(checkDir):
         makeDirs.append(checkDir)
@@ -325,7 +348,7 @@ def newDir(dirPath):
         os.mkdir(makeDirs[count])
         count -= 1
         
-    return None
+    return ('Directory tree created.', dirPath)
     
 
 ##### TEST CODE #####
