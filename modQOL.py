@@ -276,7 +276,6 @@ class ParameterFile:
                 try:
                     typeCheck = paramTypes[name]
                 except (KeyError, TypeError) as e:
-                    print(e)
                     typeCheck = 'str'
                 self.addParameter(name, value, typeCheck)
         return
