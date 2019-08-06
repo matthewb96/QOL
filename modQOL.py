@@ -82,6 +82,10 @@ class TimeTaken:
         # Calculate average
         return sum(timeTaken)/len(timeTaken)
     
+    def getLapTime(self, lapIndex=-1):
+        """ Returns the time of a single lap, given by lapIndex, in a readable format. """
+        return self._readableTime(self.laps[lapIndex]-self.laps[lapIndex-1])
+    
     def remainingTime(self, remainingLaps):
         """ Returns the remaining time in a readable format when given the number of laps left. """
         avgLap = self.avgLapTime()
