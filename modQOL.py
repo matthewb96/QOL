@@ -68,8 +68,11 @@ class TimeTaken:
         self.laps.append(time.time())
         return self.laps
     
-    def avgLapTime(self):
+    def avgLapTime(self, newLap=False):
         """ Calculates the average time taken each lap. """
+        # Create a newLap if option is True
+        if newLap:
+            self.newLap()
         # If there is only one value in laps then return None
         if len(self.laps) <= 1:
             return None
@@ -82,8 +85,10 @@ class TimeTaken:
         # Calculate average
         return sum(timeTaken)/len(timeTaken)
     
-    def getLapTime(self, lapIndex=-1):
+    def getLapTime(self, lapIndex=-1, newLap=False):
         """ Returns the time of a single lap, given by lapIndex, in a readable format. """
+        if newLap:
+            self.newLap()
         return self._readableTime(self.laps[lapIndex]-self.laps[lapIndex-1])
     
     def remainingTime(self, remainingLaps):
