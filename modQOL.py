@@ -91,9 +91,9 @@ class TimeTaken:
             self.newLap()
         return self._readableTime(self.laps[lapIndex]-self.laps[lapIndex-1])
     
-    def remainingTime(self, remainingLaps):
+    def remainingTime(self, remainingLaps, newLap=False):
         """ Returns the remaining time in a readable format when given the number of laps left. """
-        avgLap = self.avgLapTime()
+        avgLap = self.avgLapTime(newLap)
         if avgLap == None:
             return self._readableTime(None)
         # Calculate time left in this lap
