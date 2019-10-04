@@ -8,7 +8,7 @@ Classes
         Simple class for measuring the time taken for a program to run and outputting it in a readable way.
     Logger
         Class that will allow the user to log to a file while also printing to console
-        
+
 Functions
 ----------
     newDir
@@ -28,7 +28,7 @@ class TimeTaken:
         self.start = time.time()
         self.laps = [self.start]
         return
-    
+
     def _readableTime(self, timeVal):
         """ Returns a readable formatted string of the given time. """
         # If the timeVal is not a number return ??
@@ -36,7 +36,7 @@ class TimeTaken:
             timeVal = float(timeVal)
         except (TypeError, ValueError) as e:
             return '?? secs.'
-        
+
         if timeVal >= 60:
             timeValSecs = int(timeVal % 60)
             timeValMins = int((timeVal - timeValSecs) / 60)
@@ -50,24 +50,24 @@ class TimeTaken:
             return "< 1 sec."
         else:
             return "{:.0f} secs.".format(timeVal)
-        
+
     def getTimeTaken(self):
         """Returns a readable formatted string of the time taken."""
         #Calc time taken
         timeTaken = round(time.time() - self.start)
         return self._readableTime(timeTaken)
-        
+
     def resetStart(self):
         """Resets the start time and the laps list, returns new start time."""
         self.start = time.time()
         self.laps = [self.start]
         return self.start
-    
+
     def newLap(self):
         """ Adds current time to laps list, returns list. """
         self.laps.append(time.time())
         return self.laps
-    
+
     def avgLapTime(self, newLap=False):
         """ Calculates the average time taken each lap. """
         # Create a newLap if option is True
@@ -84,13 +84,13 @@ class TimeTaken:
             timeTaken.append(val - self.laps[i-1])
         # Calculate average
         return sum(timeTaken)/len(timeTaken)
-    
+
     def getLapTime(self, lapIndex=-1, newLap=False):
         """ Returns the time of a single lap, given by lapIndex, in a readable format. """
         if newLap:
             self.newLap()
         return self._readableTime(self.laps[lapIndex]-self.laps[lapIndex-1])
-    
+
     def remainingTime(self, remainingLaps, newLap=False):
         """ Returns the remaining time in a readable format when given the number of laps left. """
         avgLap = self.avgLapTime(newLap)
@@ -104,9 +104,9 @@ class TimeTaken:
 
 class Logger:
     """
-        Class that will allow the user to log to a file while also printing to console, 
+        Class that will allow the user to log to a file while also printing to console,
         inspired by the logging module albeit much simpler.
-        
+
         Parameters
         ----------
         logFile: string
@@ -123,7 +123,7 @@ class Logger:
     """
     # Class variables
     lvlVals = {'DEBUG':0, 'INFO':1, 'ERROR':2, 'FATAL':3}
-    
+
     def __init__(self, logFile, append=False, level='INFO', tags=True):
         """Initialises the class and sets the console output level and the path to the log file."""
         self.logFile = logFile
@@ -137,13 +137,13 @@ class Logger:
         # Create log file (if it doesn't exist already)
         with open(logFile, mode):
             pass
-        
+
         return
-        
+
     def setLevel(self, level):
         """
             Set the console output level to a new value.
-            
+
             Parameters
             ----------
                 level: string, optional
@@ -154,26 +154,26 @@ class Logger:
         self.checkLevel(level)
         self.consoleLvl = level.upper()
         return
-    
+
     def checkLevel(self, level):
         """Checks the level given is allowed, raises ValueError if it isn't."""
         if level.upper() not in Logger.lvlVals.keys():
             raise ValueError("level not acceptable value, given '{}' should be {}".format(level, list(Logger.lvlVals.keys())))
         return
-    
+
     def getLevel(self):
         """Returns the current console output level."""
         return self.consoleLvl
-    
+
     def getTime(self):
         """Returns the current time and date as a string"""
         t = time.localtime()
         return '{:0>2}/{:0>2}/{:0>2} {:0>2}:{:0>2}:{:0>2}'.format(t[2], t[1], str(t[0])[2:4], t[3], t[4], t[5])
-    
+
     def printOut(self, *args, level='INFO', newLine=False):
         """
             Prints out a message to the console, if level is above console output level, and to the log file.
-           
+
             Parameters
             ----------
                 *args: string or multiple strings
@@ -223,7 +223,7 @@ class ParameterFile:
                     func = getattr(module, typeCheck[1])
                     self.value = func(value)
             except (TypeError, ValueError) as e:
-                raise TypeError('Parameter is not correct type,' + 
+                raise TypeError('Parameter is not correct type,' +
                                 'Name: {}, value given: {}, type expected: {}'.format(name, value, typeCheck))
             self.type = typeCheck
             # Set name and description
@@ -233,25 +233,25 @@ class ParameterFile:
             else:
                 self.description = str(description)
             return
-        
+
         def __str__(self):
             outStr = 'Name: {}\nValue: {}\nType: {}\nDescription: {}'.format(
                     self.name, self.value, self.type, self.description)
             return outStr
-    
+
     COMMENTS = ['#', '*']
-        
+
     def __init__(self):
         self.parameters = []
         return
-    
+
     def parameterDict(self):
         """ Returns the parameters as a dictionary. """
         paramDict = {}
         for i in self.parameters:
             paramDict[i.name] = i.value
         return paramDict
-    
+
     def getParamIndex(self, name):
         """ Returns the index of the parameter with the given name, None if parameter doesn't exist. """
         paramNames = [i.name for i in self.parameters]
@@ -259,7 +259,7 @@ class ParameterFile:
             return paramNames.index(name)
         except ValueError:
             return None
-    
+
     def addParameter(self, name, value, typeCheck, description=None, overwrite=True):
         """ Adds parameter object to parameters list, overwrites any parameters with the same name. """
         index = self.getParamIndex(name)
@@ -269,7 +269,7 @@ class ParameterFile:
         else:
             self.parameters.append(parameter)
         return parameter
-    
+
     def readFile(self, filePath, paramTypes=None):
         """ Reads the parameter text file and loads each parameter, checks parameters if paramTypes dictionary given. """
         with open(filePath, 'rt') as f:
@@ -288,7 +288,7 @@ class ParameterFile:
                     typeCheck = 'str'
                 self.addParameter(name, value, typeCheck)
         return
-    
+
     def writeFile(self, filePath):
         with open(filePath, 'wt') as f:
             for i in self.parameters:
@@ -296,39 +296,38 @@ class ParameterFile:
                     f.write('# {}\n'.format(i.description))
                 f.write('{} = {}\n'.format(i.name, i.value))
         return
-    
+
 
 ##### FUNCTIONS #####
-def newDir(dirPath, number=False):
+def newDir(dirPath, number=False, ignoreEmpty=False):
     """
         Checks if all directories in a path exist and if not makes the missing ones.
-        
-        
+
+
         Parameters
         ----------
-        dirPath: string 
+        dirPath: string
             Path to the directory to be created.
         number: boolean
-            Whether or not to create a new directory, with a number, 
+            Whether or not to create a new directory, with a number,
             if dirPath already exists and is not empty.
-        
+        ignoreEmpty: boolean
+            Whether or not to still create a new directory, with a number,
+            if dirPath exists and is empty.
+
         Returns
         ----------
         info, path: tuple of 2 strings
             Tuple containing a string explaining what newDir has done
             and the path to the directory.
     """
-    #List of directories to be created
-    makeDirs = []
-    checkDir = str(dirPath)
+    # Normalise path
+    dirPath = os.path.normpath(str(dirPath))
     # Check if full path exists
     if os.path.isdir(dirPath):
         # Check if directory needs numbering
-        if number and os.listdir(dirPath) != 0:
-            if dirPath.endswith('/') or dirPath.endswith('\\'):
-                dirPath = dirPath[:-1] + '_{}' + dirPath[-1]
-            else:
-                dirPath = dirPath + '_{}'
+        if number and (len(os.listdir(dirPath)) != 0 or ignoreEmpty):
+            dirPath = dirPath + '_{}'
             count = 1
             newDir = dirPath.format(count)
             while os.path.exists(newDir):
@@ -339,15 +338,15 @@ def newDir(dirPath, number=False):
                     newDir)
         else:
             return ('Directory already exists.', dirPath)
-        
+
+    #List of directories to be created
+    makeDirs = []
+    checkDir = dirPath
     #Loop until found directory that exists
     while not os.path.exists(checkDir):
         makeDirs.append(checkDir)
-        if checkDir.rfind("\\") == -1:
-            checkDir =  checkDir[:checkDir.rfind("/")]
-        else:
-            checkDir =  checkDir[:checkDir.rfind("\\")]
-        
+        checkDir = checkDir[:checkDir.rfind(os.path.sep)]
+
     #Loop until dirTree exists
     count = len(makeDirs) - 1
     while not os.path.exists(dirPath):
@@ -355,9 +354,9 @@ def newDir(dirPath, number=False):
             raise ValueError("Count too low!")
         os.mkdir(makeDirs[count])
         count -= 1
-        
+
     return ('Directory tree created.', dirPath)
-    
+
 
 ##### TEST CODE #####
 if __name__ == '__main__':
