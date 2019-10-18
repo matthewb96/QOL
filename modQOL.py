@@ -176,7 +176,7 @@ class ParameterFile:
                 # Read parameter
                 name, value = line.split('=')
                 name = name.strip()
-                value = value.strip()
+                value = value.strip().replace('\\', '/')
                 try:
                     typeCheck = paramTypes[name]
                 except (KeyError, TypeError) as e:
