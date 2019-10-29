@@ -5,5 +5,5 @@
 ##### MAIN #####
 # List the packages to import when using from pySATURN import *
 __all__ = [
-        'modQOL'
+        'qol'
            ]
