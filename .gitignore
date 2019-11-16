@@ -3,3 +3,13 @@ __pycache__
 # Ignore log files
 *.log
 *.LOG
+
+# Ignore vscode stuff
+.vscode
+
+# Ignoring pipenv stuff
+Pipfile.lock
+
+# Ignore sphinx build folders
+doc/build
+doc/source/QOL/_autosummary
