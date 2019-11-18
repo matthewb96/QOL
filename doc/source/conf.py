@@ -41,7 +41,8 @@ release = version
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx.ext.napoleon'
+    'sphinx.ext.napoleon',
+    'sphinx_git'
 ]
 
 # Don't add package name infront of modules
