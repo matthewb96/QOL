@@ -11,7 +11,6 @@ Welcome to QOL's documentation!
    
    about
    QOL/modules
-   changelog
 
 
 Indices and tables
