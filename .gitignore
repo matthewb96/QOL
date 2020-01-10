@@ -13,3 +13,5 @@ Pipfile.lock
 # Ignore sphinx build folders
 doc/build
 doc/source/QOL/_autosummary
+# Ignore generated changelog file
+_changelog.rst

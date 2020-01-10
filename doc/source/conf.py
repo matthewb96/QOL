@@ -18,7 +18,7 @@ sys.path.append('../')
 # -- Project information -----------------------------------------------------
 
 project = 'QOL'
-copyright = '2019, Matthew Buckley'
+copyright = '2020, Matthew Buckley'
 author = 'Matthew Buckley'
 
 # The full version, including alpha/beta/rc tags
@@ -32,6 +32,30 @@ if gitOut.lower().startswith('v'):
 version = gitOut
 release = version
 
+# Create changelog file from git tags
+with open('_changelog.rst', 'wt') as f:
+    f.write('.. _changelog:\n\nChangelog\n=========\n')
+# Get information about all the tags
+tags = sp.check_output(['git', 'tag', '-l', '-n1']).decode('utf-8').split('\n')
+tags.reverse()
+for t in tags:
+    if t.strip() == '':
+        continue
+    # Split t on first space
+    loc = t.find(' ')
+    nm = t[:loc].strip()
+    title = t[loc:].strip()
+    try:
+        desc = sp.check_output(['git', 'tag', '-l',f'{nm}', '-n100']).decode('utf-8')
+        desc = desc[desc.find('\n'):]
+        desc = [i.strip() for i in desc.split('\n')]
+    except sp.CalledProcessError as e:
+        print(e)
+        desc = ''
+    with open('_changelog.rst', 'at') as f:
+        head = f'\n{nm} - {title}\n'
+        f.writelines([head, '-'*len(head.strip())])
+        f.writelines('\n'.join(desc))
 
 # -- General configuration ---------------------------------------------------
 

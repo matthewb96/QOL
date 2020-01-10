@@ -17,9 +17,5 @@ Version Information
     :uncommitted:
     :untracked:
 
-Changelog
----------
-.. toctree::
-    :maxdepth: 1
-
-    changelog
+.. seealso::
+    :ref:`changelog` for information on version changes.
