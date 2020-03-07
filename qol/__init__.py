@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-    Initialisation module for QOL package.
+    QOL package contains a collection of various convience functions and classes.
 """
 ##### MAIN #####
 # List the packages to import when using from pySATURN import *
 __all__ = [
-        'qol'
+        'errors',
+        'io'
            ]
